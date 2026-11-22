@@ -1,0 +1,1009 @@
+# MASTER PROJECT PROMPT — DZ CAR RENTAL DISCOVERY SYSTEM
+
+## 1. YOUR ROLE
+
+Act as a senior Python software architect, full-stack developer, data engineer, GIS specialist, database engineer, and QA engineer.
+
+Your task is to design and build a complete, production-quality application called:
+
+**DZ Car Rental Finder**
+
+The application must discover, collect, organize, verify, deduplicate, and export car rental agencies (*Location de voiture / كراء السيارات*) throughout Algeria.
+
+This is a real software project, not a demonstration.
+
+Do not produce a superficial prototype, mock data, placeholder functionality, or pseudocode. Implement working features with proper architecture, error handling, persistence, tests, and documentation.
+
+Work systematically. Inspect the project structure before editing existing files. Maintain a clear implementation checklist and track completed work.
+
+---
+
+# 2. PROJECT OBJECTIVE
+
+Build a fully automated local system capable of collecting car rental agency information across **all 69 Algerian wilayas**.
+
+The system must collect as much legitimate, publicly available information as possible, while respecting source restrictions and avoiding excessive runtime.
+
+Each agency record should contain:
+
+- Business name.
+- Business name in Arabic, when available.
+- Business name in French, when available.
+- Business name in English, when available.
+- Primary Algerian phone number.
+- Additional phone numbers.
+- Full address.
+- Commune.
+- Wilaya.
+- Wilaya code.
+- GPS latitude.
+- GPS longitude.
+- Website.
+- Facebook page.
+- Instagram page.
+- Other public social media links.
+- Google Maps URL, if legitimately available.
+- Source name.
+- Original source URL.
+- Collection date.
+- Last verification date.
+- Verification status.
+- Confidence score.
+- Additional notes.
+
+Never invent missing information. Empty fields must remain empty.
+
+The system must preserve the origin of information and distinguish collected facts from inferred or normalized values.
+
+---
+
+# 3. TECHNICAL AND FINANCIAL CONSTRAINTS
+
+The project has a strict budget of **zero**.
+
+Do not require:
+- Paid APIs.
+- Paid databases.
+- Paid hosting.
+- Paid subscriptions.
+- Commercial scraping services.
+- API keys requiring payment.
+- Cloud infrastructure.
+
+The application must run locally on Windows.
+
+Available disk space: more than 5 GB.
+
+Use free and open-source software wherever possible.
+
+The system should support offline processing of previously downloaded datasets. Internet access is required for new collection operations and online verification.
+
+Do not make the application dependent on a service that can unexpectedly introduce mandatory charges.
+
+---
+
+# 4. APPLICATION INTERFACES
+
+Build BOTH:
+
+### A. Windows desktop application
+
+Provide a desktop launcher and package the application so it can eventually be distributed as a Windows executable.
+
+The user should be able to:
+- Launch the application.
+- Start a collection run.
+- Stop a collection run.
+- View progress.
+- Review records.
+- Manage duplicates.
+- Export results.
+- Open logs and reports.
+
+### B. Local web dashboard
+
+Provide a modern local web interface accessible through a browser.
+
+The desktop launcher should start the local backend and open the dashboard automatically.
+
+Both interfaces must use the same backend, business logic, and database.
+
+Do not create two independent implementations.
+
+Recommended architecture:
+- Python backend.
+- FastAPI for local API.
+- Modern local frontend.
+- SQLite database.
+- Desktop packaging using an appropriate Windows-compatible packaging solution.
+
+Choose a maintainable frontend framework and explain the choice.
+
+The application must not require an external server to function.
+
+---
+
+# 5. DATA SOURCES
+
+Implement a modular source-adapter architecture.
+
+Each source must be independently configurable, enabled, disabled, tested, and maintained.
+
+Prioritize the following sources:
+
+### Source 1: OpenStreetMap
+
+Use OpenStreetMap as a primary free geographic dataset.
+
+Download the Algeria PBF extract from:
+
+https://download.geofabrik.de/africa/algeria-latest.osm.pbf
+
+Use suitable open-source Python libraries such as:
+- Pyrosm.
+- PyOsmium.
+- GeoPandas.
+- Shapely.
+
+Extract relevant businesses using appropriate tags, names, contact details, websites, and other available attributes.
+
+Do not assume that every car rental business is correctly tagged.
+
+Preserve OpenStreetMap identifiers and attribution.
+
+Respect the Open Database License (ODbL), including applicable attribution and share-alike requirements.
+
+### Source 2: Public business directories
+
+Create adapters for publicly accessible French and Arabic business directories.
+
+Examples of search terms:
+
+French:
+- Location de voiture.
+- Location voitures.
+- Agence de location automobile.
+- Location de véhicules.
+- Loueur automobile.
+- Location voiture sans chauffeur.
+
+Arabic:
+- كراء السيارات.
+- وكالة كراء السيارات.
+- تأجير السيارات.
+- تأجير المركبات.
+- كراء السيارات في الجزائر.
+
+English:
+- Car rental.
+- Car hire.
+- Vehicle rental.
+- Rent a car.
+
+Only automate access when the source permits it.
+
+### Source 3: Public business websites
+
+Discover and collect information from public business websites when their terms permit automated access.
+
+### Source 4: Public social media pages
+
+Collect information only from publicly accessible pages through permitted methods.
+
+Do not bypass login restrictions or access controls.
+
+### Source 5: Other free datasets
+
+Allow additional open datasets and manually imported CSV/Excel files.
+
+### Google Maps restrictions
+
+Google Maps can be used for manual discovery and manual verification.
+
+Do not implement automated Google Maps scraping or extraction that violates its terms.
+
+Do not bypass CAPTCHAs, rate limits, authentication, or technical restrictions.
+
+Do not rotate proxies or identities to evade restrictions.
+
+The architecture must allow new compliant sources to be added later without rewriting the core application.
+
+---
+
+# 6. ALL 69 WILAYAS
+
+Coverage must include all 69 wilayas, not only the major cities.
+
+Before implementation, verify the current official administrative list and codes using authoritative sources.
+
+Do not rely on an outdated 48-wilaya list.
+
+For every wilaya, maintain:
+- Official name in French.
+- Official name in Arabic.
+- Wilaya code.
+- Geographic boundaries or a reliable geographic reference.
+- Associated communes.
+- Alternative spellings and transliterations.
+
+Use geographic boundaries to assign businesses to wilayas whenever possible.
+
+Do not rely exclusively on text matching.
+
+If geographic assignment is uncertain, flag the record for review.
+
+The application must support future administrative changes without requiring a complete rewrite.
+
+---
+
+# 7. COLLECTION ENGINE
+
+Build a robust collection engine.
+
+Requirements:
+
+1. Collect information from all enabled and permitted sources.
+2. Process the downloaded OpenStreetMap dataset locally.
+3. Generate multilingual search strategies.
+4. Cover all 69 wilayas.
+5. Include major cities, small towns, and rural communes.
+6. Support configurable search depth.
+7. Avoid excessive requests to external websites.
+8. Respect robots.txt, source terms, and rate limits.
+9. Implement retries with exponential backoff.
+10. Handle temporary network failures.
+11. Save progress continuously.
+12. Resume interrupted collection runs.
+13. Prevent repeated unnecessary downloads.
+14. Maintain detailed logs.
+15. Report source-specific failures.
+16. Allow the user to stop a run safely.
+
+Collection must be balanced: good geographic coverage without excessive runtime.
+
+The user should be able to select:
+- All wilayas.
+- Specific wilayas.
+- Individual communes, where supported.
+- Specific enabled sources.
+
+Display collection progress by:
+- Overall progress.
+- Wilaya.
+- Source.
+- Number of discovered records.
+- Number of processed records.
+- Number of rejected records.
+- Number of records requiring review.
+
+Never report a wilaya as completely covered merely because its search process finished.
+
+Distinguish between:
+- Collection completed.
+- Sources unavailable.
+- No results found.
+- Coverage uncertain.
+
+---
+
+# 8. PHONE NUMBER PROCESSING
+
+Implement proper Algerian phone normalization.
+
+Support common formats:
+- +213XXXXXXXXX.
+- 00213XXXXXXXXX.
+- 0XXXXXXXXX.
+- Numbers with spaces, hyphens, or parentheses.
+
+Use an appropriate phone-number parsing library, such as python-phonenumbers.
+
+Store:
+- Original phone number.
+- Normalized international number.
+- Validation result.
+- Number type when determinable.
+- Source where the number was found.
+
+Do not automatically classify every syntactically valid number as an active phone number.
+
+Distinguish:
+- Valid format.
+- Invalid format.
+- Unknown.
+- Verified reachable, only if legitimately checked.
+
+Never generate or guess telephone numbers.
+
+---
+
+# 9. DEDUPLICATION ENGINE
+
+This is a critical feature.
+
+The same business may appear in several sources with different spellings, addresses, or phone formats.
+
+Implement automatic deduplication while preserving all useful information.
+
+Use multiple matching signals:
+
+- Normalized phone number.
+- Business name similarity.
+- Arabic name similarity.
+- French name similarity.
+- Address similarity.
+- Geographic proximity.
+- Website domain.
+- Social media URLs.
+- OpenStreetMap identifiers.
+- Other stable source identifiers.
+
+Use appropriate methods such as:
+- Unicode normalization.
+- Arabic text normalization.
+- French accent normalization.
+- Transliteration.
+- Fuzzy string matching.
+- Geographic distance calculations.
+- Weighted matching scores.
+
+### Matching decisions
+
+High-confidence duplicates:
+- Automatically merge.
+- Preserve all unique fields.
+- Preserve all original source records.
+- Preserve source URLs.
+- Preserve collection dates.
+- Record the merge history.
+
+Uncertain duplicates:
+- Send to the manual review panel.
+
+Clearly different businesses:
+- Keep separate.
+
+Important rules:
+
+Two branches of the same company must not automatically become one business.
+
+A shared phone number alone must not be sufficient evidence for merging.
+
+Do not delete original source evidence.
+
+Maintain a complete merge history and allow the user to reverse an incorrect merge.
+
+---
+
+# 10. AUTOMATIC VERIFICATION
+
+Build a verification engine.
+
+Check:
+
+- Whether the business name is present.
+- Whether the phone number has a valid format.
+- Whether the address is plausible.
+- Whether the commune belongs to the assigned wilaya.
+- Whether GPS coordinates fall within Algeria.
+- Whether the website URL is syntactically valid.
+- Whether source links are accessible when checking is permitted.
+- Whether conflicting information exists.
+- Whether multiple sources support the same information.
+
+Use four primary business statuses:
+
+1. VERIFIED.
+2. UNVERIFIED.
+3. NEEDS_REVIEW.
+4. CLOSED.
+
+A record must not be marked VERIFIED merely because it was discovered.
+
+Verification must rely on evidence and record-level confidence.
+
+Store:
+- Verification date.
+- Verification method.
+- Supporting sources.
+- Confidence score.
+- Verification notes.
+
+Do not automatically declare a business closed because a website is temporarily unavailable.
+
+---
+
+# 11. MANUAL REVIEW PANEL
+
+Build a dedicated review interface.
+
+The user must be able to:
+
+- View uncertain records.
+- Compare suspected duplicates side by side.
+- Inspect all available sources.
+- Compare phone numbers.
+- Compare addresses.
+- Inspect coordinates on a map.
+- Accept a suggested merge.
+- Reject a suggested merge.
+- Edit a business record.
+- Change its verification status.
+- Assign the correct wilaya or commune.
+- Add missing information manually.
+- Mark a record as closed.
+- Restore a previously merged record.
+
+Every manual change must be recorded in an audit history.
+
+Make the interface efficient for reviewing hundreds or thousands of records.
+
+---
+
+# 12. DATABASE DESIGN
+
+Use SQLite for local persistence.
+
+Design a normalized, maintainable database.
+
+At minimum, create tables for:
+
+- Businesses.
+- Business names and translations.
+- Phone numbers.
+- Addresses.
+- Geographic locations.
+- Wilayas.
+- Communes.
+- Sources.
+- Source records.
+- Business-source relationships.
+- Collection runs.
+- Verification records.
+- Duplicate candidates.
+- Merge history.
+- Manual review decisions.
+- Audit logs.
+- Application settings.
+
+Use migrations.
+
+Create appropriate indexes.
+
+Use transactions for critical operations.
+
+Prevent accidental data loss.
+
+Implement automatic backups before migrations and major database operations.
+
+The database must preserve source provenance and allow future exports without losing information.
+
+---
+
+# 13. DASHBOARD DESIGN
+
+Create a modern, professional, clean interface.
+
+Use a restrained visual identity suitable for a serious data-management tool.
+
+The interface must support French, Arabic, and English.
+
+Arabic must use proper right-to-left layout.
+
+Provide language selection in settings.
+
+### Main dashboard
+
+Display:
+- Total unique businesses.
+- Businesses by wilaya.
+- Verified businesses.
+- Unverified businesses.
+- Records requiring review.
+- Suspected duplicates.
+- Closed businesses.
+- Collection runs.
+- Last collection date.
+- Source coverage.
+- Missing phone numbers.
+- Missing addresses.
+
+### Navigation
+
+Include:
+
+1. Dashboard.
+2. Collect Data.
+3. Businesses.
+4. Wilaya Explorer.
+5. Map.
+6. Duplicate Management.
+7. Verification.
+8. Manual Review.
+9. Export Center.
+10. Sources.
+11. Collection History.
+12. Logs.
+13. Settings.
+
+### Business management
+
+Provide:
+- Search.
+- Filters.
+- Sorting.
+- Pagination.
+- Record details.
+- Editing.
+- Source inspection.
+- Status changes.
+
+Filters should include:
+- Wilaya.
+- Commune.
+- Verification status.
+- Source.
+- Has phone number.
+- Has address.
+- Has website.
+- Has GPS coordinates.
+- Collection date.
+
+### Wilaya Explorer
+
+Display all 69 wilayas.
+
+For each wilaya, show:
+- Number of discovered agencies.
+- Number verified.
+- Number unverified.
+- Number needing review.
+- Number of communes covered.
+- Sources used.
+- Collection status.
+
+Do not present raw counts as proof of completeness.
+
+### Map
+
+Display businesses with coordinates.
+
+Allow filtering by:
+- Wilaya.
+- Verification status.
+- Source.
+
+Do not fabricate coordinates for businesses without geographic evidence.
+
+---
+
+# 14. EXPORT CENTER
+
+Support two formats:
+
+- Excel (.xlsx).
+- CSV.
+
+The Excel workbook must include:
+
+### Sheet 1: MASTER
+All unique business records.
+
+### Sheet 2: STATISTICS
+Counts by wilaya, status, source, and missing fields.
+
+### Sheet 3: SOURCES
+Source provenance and source URLs.
+
+### Sheet 4: REVIEW_REQUIRED
+Uncertain records and suspected duplicates.
+
+### Additional sheets
+One separate sheet for every one of the 69 wilayas, including wilayas with zero results.
+
+Use readable column names.
+
+Include:
+- Business information.
+- Phone numbers.
+- Addresses.
+- GPS coordinates.
+- Wilaya and commune.
+- Website and social media.
+- Source information.
+- Verification status.
+- Confidence score.
+- Collection date.
+
+CSV must be UTF-8 encoded, preferably with BOM for compatibility with Microsoft Excel.
+
+Allow:
+- Export everything.
+- Export selected wilayas.
+- Export selected records.
+- Export verified businesses only.
+- Export records requiring review.
+
+Do not export duplicate source rows as separate unique businesses in the master sheet.
+
+Keep all source evidence available in the appropriate source data.
+
+---
+
+# 15. PERFORMANCE AND RELIABILITY
+
+The application must work with thousands or potentially tens of thousands of records.
+
+Implement:
+- Background collection tasks.
+- Database transactions.
+- Efficient bulk imports.
+- Pagination.
+- Incremental processing.
+- Local caching.
+- Progress reporting.
+- Graceful cancellation.
+- Error recovery.
+- Structured logging.
+- Database integrity checks.
+
+Avoid blocking the user interface during collection.
+
+Do not load the entire database into memory unnecessarily.
+
+Use appropriate spatial indexes or efficient geographic filtering when needed.
+
+---
+
+# 16. SECURITY AND COMPLIANCE
+
+This application is local-first.
+
+Implement:
+- Localhost-only binding by default.
+- Input validation.
+- Safe file paths.
+- Protection against SQL injection.
+- Secure handling of imported files.
+- No unnecessary transmission of user data.
+- Clear source attribution.
+- Respect for source terms and data licences.
+
+Do not bypass:
+- Authentication.
+- CAPTCHAs.
+- Robots restrictions.
+- Rate limits.
+- Technical access controls.
+
+Do not collect private personal information.
+
+Collect business contact information only from appropriate public sources and within applicable legal and licensing requirements.
+
+---
+
+# 17. TESTING
+
+Write real automated tests.
+
+At minimum, test:
+
+### Database
+- Creation.
+- Migrations.
+- Insert/update/delete.
+- Transactions.
+- Backup and restore.
+
+### Geographic processing
+- Wilaya assignment.
+- Commune assignment.
+- Coordinates outside Algeria.
+- Missing coordinates.
+- Boundary edge cases.
+
+### Phone processing
+- +213 format.
+- 00213 format.
+- Local 0 format.
+- Invalid numbers.
+- Duplicate formatting.
+
+### Deduplication
+- Identical businesses.
+- Different spellings.
+- Arabic/French name variants.
+- Shared phone numbers.
+- Different branches.
+- Similar names at different addresses.
+- Reversible merges.
+
+### Verification
+- Missing data.
+- Conflicting sources.
+- Invalid URLs.
+- Uncertain status.
+
+### Export
+- Excel generation.
+- CSV generation.
+- Correct wilaya sheets.
+- UTF-8 Arabic text.
+- Empty wilaya sheets.
+- Correct duplicate handling.
+
+### Interface
+- API endpoints.
+- Collection progress.
+- Review operations.
+- Export operations.
+
+Use synthetic test fixtures only for tests. Clearly distinguish test data from collected real business records.
+
+---
+
+# 18. WINDOWS INSTALLATION AND PACKAGING
+
+Provide a complete Windows setup.
+
+Create:
+- requirements.txt or an appropriate dependency lock file.
+- setup.bat.
+- run.bat.
+- build.bat.
+- README.md.
+- .gitignore.
+- Configuration examples.
+- Database initialization scripts.
+- Test execution scripts.
+
+The user should be able to install and launch the system with straightforward instructions.
+
+The final desktop package should:
+- Launch the backend.
+- Start the local dashboard.
+- Open the browser automatically.
+- Display useful errors if startup fails.
+- Shut down cleanly.
+
+Do not assume Python is installed without checking.
+
+Provide clear instructions for installing required prerequisites.
+
+Do not require Docker.
+
+---
+
+# 19. PROJECT STRUCTURE
+
+Use a clean modular structure similar to:
+
+dz-car-rental-finder/
+│
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   ├── core/
+│   │   ├── database/
+│   │   ├── models/
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── collectors/
+│   │   ├── processors/
+│   │   ├── deduplication/
+│   │   ├── verification/
+│   │   ├── geography/
+│   │   ├── exporters/
+│   │   └── main.py
+│   │
+│   └── tests/
+│
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   └── package.json
+│
+├── desktop/
+│
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   ├── boundaries/
+│   └── backups/
+│
+├── exports/
+│
+├── logs/
+│
+├── scripts/
+│
+├── requirements.txt
+├── setup.bat
+├── run.bat
+├── build.bat
+├── README.md
+└── .gitignore
+
+You may improve this structure if there is a strong technical reason. Explain significant deviations.
+
+---
+
+# 20. IMPLEMENTATION RULES
+
+Follow these rules throughout development.
+
+1. Do not generate the entire application as one enormous source file.
+2. Do not leave important functionality as TODO comments.
+3. Do not use fake data to make the dashboard appear populated.
+4. Do not claim a collector works unless it has been implemented and tested.
+5. Do not silently ignore errors.
+6. Do not overwrite existing user data.
+7. Do not create duplicate database entries unnecessarily.
+8. Do not hardcode only the original 48 wilayas.
+9. Do not fabricate source URLs, business records, phone numbers, or GPS coordinates.
+10. Do not implement prohibited Google Maps scraping.
+11. Do not require paid APIs.
+12. Do not sacrifice data provenance for convenience.
+13. Do not merge separate business branches automatically without sufficient evidence.
+14. Do not mark all collected records as verified.
+15. Keep the code readable, typed where practical, documented, and maintainable.
+
+When a source does not permit automated collection, implement it as a manual-import or manual-verification workflow instead.
+
+When a source is unavailable, the application must continue using other enabled sources.
+
+---
+
+# 21. DEVELOPMENT WORKFLOW
+
+Build the project in phases.
+
+### Phase 1 — Architecture and foundation
+- Inspect the environment.
+- Create the project structure.
+- Establish dependencies.
+- Create configuration management.
+- Implement the database.
+- Implement migrations.
+- Verify application startup.
+
+### Phase 2 — Geographic foundation
+- Verify the authoritative 69-wilaya list.
+- Obtain suitable geographic boundaries.
+- Implement commune and wilaya assignment.
+- Write geographic tests.
+
+### Phase 3 — OpenStreetMap collection
+- Implement Algeria PBF download.
+- Implement local parsing.
+- Extract relevant business records.
+- Preserve OSM identifiers and attribution.
+- Test on a small sample before processing the full dataset.
+
+### Phase 4 — Other source adapters
+- Implement permitted public directory adapters.
+- Implement public website collection where permitted.
+- Implement manual import.
+- Add source-specific limits and configuration.
+
+### Phase 5 — Processing and deduplication
+- Normalize business names.
+- Normalize Arabic and French text.
+- Normalize phone numbers.
+- Normalize URLs.
+- Implement duplicate detection.
+- Implement safe automatic merging.
+- Implement reversible merge history.
+
+### Phase 6 — Verification
+- Implement validation rules.
+- Implement confidence scoring.
+- Implement status management.
+- Implement review queues.
+
+### Phase 7 — Backend and dashboard
+- Implement API.
+- Implement dashboard.
+- Implement business management.
+- Implement Wilaya Explorer.
+- Implement map.
+- Implement manual review.
+
+### Phase 8 — Export
+- Implement Excel.
+- Implement CSV.
+- Validate Arabic encoding.
+- Generate all 69 wilaya sheets.
+- Test export accuracy.
+
+### Phase 9 — Windows packaging
+- Implement desktop launcher.
+- Implement setup and run scripts.
+- Implement Windows executable packaging.
+- Test startup and shutdown.
+
+### Phase 10 — Final QA
+- Run the entire test suite.
+- Fix all critical errors.
+- Test a complete small collection run.
+- Test cancellation and resumption.
+- Test database backup and restore.
+- Test Excel and CSV exports.
+- Verify the documentation.
+
+Do not skip phases just to produce a quick visual result.
+
+---
+
+# 22. FINAL DELIVERABLES
+
+The finished project must include:
+
+1. Complete Python backend.
+2. Complete frontend dashboard.
+3. Desktop launcher.
+4. SQLite database implementation.
+5. Verified 69-wilaya administrative dataset.
+6. Geographic processing.
+7. Working OpenStreetMap collector.
+8. Additional compliant source adapters.
+9. Manual import functionality.
+10. Phone normalization.
+11. Automatic deduplication.
+12. Reversible merge history.
+13. Automatic verification.
+14. Manual review panel.
+15. Business search and filtering.
+16. Wilaya Explorer.
+17. Map interface.
+18. Excel exporter.
+19. CSV exporter.
+20. Logging and collection history.
+21. Backup and restore.
+22. Automated tests.
+23. Windows installation scripts.
+24. Windows build script.
+25. Complete README with setup and usage instructions.
+
+---
+
+# 23. FINAL ACCEPTANCE CRITERIA
+
+The application is not finished until all of these are true:
+
+- It launches successfully on Windows.
+- The desktop launcher opens the local dashboard.
+- It uses a persistent SQLite database.
+- It supports all 69 wilayas.
+- It can process the Algeria OpenStreetMap extract.
+- It can collect data from at least one working compliant online source in addition to OSM, or clearly documents why an adapter cannot currently operate.
+- It preserves source provenance.
+- It normalizes Algerian phone numbers.
+- It identifies likely duplicates.
+- It automatically merges high-confidence duplicates safely.
+- It sends uncertain duplicates to manual review.
+- It supports record editing and audit history.
+- It exports valid Excel and CSV files.
+- It generates all 69 wilaya sheets.
+- It handles Arabic text correctly.
+- It can resume an interrupted collection.
+- It does not require paid APIs.
+- It does not fabricate business information.
+- Critical tests pass.
+
+At the end, provide a report containing:
+
+1. What was implemented.
+2. Project folder structure.
+3. Files created and modified.
+4. Dependencies.
+5. Tests executed and their results.
+6. Known limitations.
+7. Exact Windows installation instructions.
+8. Exact launch instructions.
+9. How to start the first collection.
+10. Where exported files are saved.
+
+Be honest about anything that remains incomplete.
+
+**Start by inspecting the available environment and creating the architecture. Then implement the application phase by phase. Do not stop after producing a plan or a dashboard mockup. Build the actual working software.**

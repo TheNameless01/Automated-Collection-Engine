@@ -1,0 +1,19 @@
+[
+  "backend/tests/test_api_and_collectors.py::test_fastapi_endpoints_crud_review_and_export",
+  "backend/tests/test_api_and_collectors.py::test_osm_and_pagesmaghreb_parsers",
+  "backend/tests/test_collection_engine.py::test_collection_engine_stop_and_resume",
+  "backend/tests/test_collection_engine.py::test_manual_import_xlsx_and_geojson_and_pagesjaunes_parser",
+  "backend/tests/test_database.py::test_crud_and_backup_restore_cycle",
+  "backend/tests/test_database.py::test_migrations_seed_all_69_wilayas_and_1541_communes",
+  "backend/tests/test_database.py::test_transaction_rollback_prevents_partial_writes",
+  "backend/tests/test_geography.py::test_algiers_coordinates_assign_wilaya_16",
+  "backend/tests/test_geography.py::test_conflicting_wilaya_text_vs_coordinates_flags_uncertain",
+  "backend/tests/test_geography.py::test_coordinates_outside_algeria_flagged",
+  "backend/tests/test_geography.py::test_missing_coordinates_text_fallback_arabic_and_french",
+  "backend/tests/test_geography.py::test_new_wilaya_68_bou_saada_assignment",
+  "backend/tests/test_phone_and_dedup.py::test_algerian_phone_formats",
+  "backend/tests/test_phone_and_dedup.py::test_dedup_auto_merges_and_reverts_arabic_french_variants",
+  "backend/tests/test_phone_and_dedup.py::test_shared_phone_alone_and_branches_never_auto_merge",
+  "backend/tests/test_verification_and_export.py::test_excel_and_csv_exports_include_all_69_wilayas_and_arabic_utf8",
+  "backend/tests/test_verification_and_export.py::test_verification_never_marks_incomplete_record_verified"
+]

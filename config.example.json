@@ -1,0 +1,22 @@
+{
+  "app_name": "DZ Car Rental Finder",
+  "host": "127.0.0.1",
+  "port": 8000,
+  "default_language": "fr",
+  "user_agent": "DZCarRentalFinder/1.0 (local-open-data-collector; contact: local)",
+  "collection": {
+    "default_rate_limit_seconds": 1.5,
+    "request_timeout_seconds": 20.0,
+    "max_retries": 3,
+    "respect_robots_txt": true,
+    "osm_pbf_url": "https://download.geofabrik.de/africa/algeria-latest.osm.pbf"
+  },
+  "deduplication": {
+    "auto_merge_threshold": 0.88,
+    "review_threshold": 0.58,
+    "max_branch_distance_km": 1.5
+  },
+  "verification": {
+    "check_urls_online": false
+  }
+}

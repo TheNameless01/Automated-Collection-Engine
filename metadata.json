@@ -1,0 +1,6 @@
+{
+  "name": "DZ Car Rental Finder",
+  "description": "Local-first automated discovery, deduplication, verification, and export system for car rental agencies across all 69 Algerian wilayas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
